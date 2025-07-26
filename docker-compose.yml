@@ -1,0 +1,35 @@
+version: "3.8"
+services:
+  db:
+    image: postgres:16
+    container_name: insurance-postgres
+    environment:
+      POSTGRES_DB: insurance_db
+      POSTGRES_USER: insurance_user
+      POSTGRES_PASSWORD: mysecretpassword
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - insurance-net
+
+  app:
+    build: .
+    container_name: insurance-app
+    depends_on:
+      - db
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/insurance_db
+      SPRING_DATASOURCE_USERNAME: insurance_user
+      SPRING_DATASOURCE_PASSWORD: mysecretpassword
+    networks:
+      - insurance-net
+
+volumes:
+  postgres-data:
+
+networks:
+  insurance-net:
